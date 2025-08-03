@@ -1,17 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Writing Progress Tracker</title>
-    <meta name="description" content="Track your daily writing goals and visualize your progress">
-    <meta name="theme-color" content="#8b5cf6">
-    <link rel="manifest" href="#" id="manifest-placeholder">
-    <link rel="apple-touch-icon" href="#" id="apple-touch-icon">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Writing Tracker">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <title>GeneticFit - Personalisierte Fitness App</title>
     <style>
         * {
             margin: 0;
@@ -20,8 +12,8 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f3ff 0%, #e0e7ff 100%);
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -32,919 +24,649 @@
         }
 
         .header {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
             text-align: center;
-            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         .header h1 {
-            font-size: 2.5rem;
-            color: #374151;
+            color: #667eea;
             margin-bottom: 10px;
         }
 
-        .header p {
-            color: #6b7280;
-            font-size: 1.1rem;
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .content {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .content.active {
+            display: block;
         }
 
         .grid {
             display: grid;
-            gap: 24px;
-            margin-bottom: 32px;
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
         .grid-2 {
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         }
 
-        .grid-5 {
+        .grid-3 {
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         }
 
         .card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            padding: 24px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
         }
 
-        .card h2, .card h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: #374151;
-        }
-
-        .input-group {
-            margin-bottom: 16px;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 8px;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.15s ease-in-out;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: #8b5cf6;
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-        }
-
-        .input-row {
-            display: flex;
-            gap: 8px;
-        }
-
-        .input-row input {
-            flex: 1;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            background: #10b981;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
+        .workout-card {
+            text-align: center;
+            padding: 20px;
             cursor: pointer;
-            transition: background-color 0.15s ease-in-out;
+            transition: transform 0.2s;
         }
 
-        .btn:hover {
-            background: #059669;
+        .workout-card:hover {
+            transform: scale(1.05);
         }
 
-        .progress-section {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            padding: 24px;
-            margin-bottom: 32px;
+        .strength { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .cardio { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
+        .rest { background: linear-gradient(135deg, #a8edea, #fed6e3); }
+
+        .supplement {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .supplement.taken {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .meal {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .meal h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .progress {
+            background: #e9ecef;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
         }
 
         .progress-bar {
-            width: 100%;
-            height: 16px;
-            background: #e5e7eb;
-            border-radius: 8px;
-            overflow: hidden;
-            margin: 16px 0;
-        }
-
-        .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
-            transition: width 0.5s ease-in-out;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            transition: width 0.3s;
         }
 
-        .progress-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.875rem;
-            color: #6b7280;
-            margin-bottom: 8px;
-        }
-
-        .progress-stats {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.875rem;
-            margin-top: 8px;
-        }
-
-        .progress-left {
-            color: #6366f1;
-            font-weight: 500;
-        }
-
-        .completion-estimate {
+        .stat {
             text-align: center;
-            font-size: 0.875rem;
-            color: #6b7280;
-            background: #f9fafb;
-            padding: 8px;
-            border-radius: 8px;
-            margin-top: 16px;
-        }
-
-        .completion-estimate .highlight {
-            color: #6366f1;
-            font-weight: 600;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            padding: 24px;
-            text-align: center;
-        }
-
-        .stat-card .icon {
-            width: 32px;
-            height: 32px;
-            margin: 0 auto 8px;
-            background: #e5e7eb;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-        }
-
-        .stat-card .value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #374151;
-            margin-bottom: 4px;
-        }
-
-        .stat-card .label {
-            font-size: 0.875rem;
-            color: #6b7280;
-        }
-
-        .icon-blue { background: #dbeafe; color: #3b82f6; }
-        .icon-indigo { background: #e0e7ff; color: #6366f1; }
-        .icon-green { background: #d1fae5; color: #10b981; }
-        .icon-purple { background: #ede9fe; color: #8b5cf6; }
-        .icon-orange { background: #fed7aa; color: #f97316; }
-
-        .chart-container {
-            position: relative;
-            height: 300px;
-            margin-top: 16px;
-        }
-
-        .entries-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 16px;
-        }
-
-        .entries-table th,
-        .entries-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .entries-table th {
-            font-weight: 600;
-            color: #374151;
-            background: #f9fafb;
-        }
-
-        .progress-cell {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .mini-progress-bar {
-            width: 60px;
-            height: 8px;
-            background: #e5e7eb;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .mini-progress-fill {
-            height: 100%;
-            background: #10b981;
-            transition: width 0.3s ease-in-out;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .export-section {
-            margin-top: 32px;
-            text-align: center;
-        }
-
-        .export-section .btn {
-            margin: 0 8px;
-        }
-
-        .btn-secondary {
-            background: #6366f1;
-        }
-
-        .btn-secondary:hover {
-            background: #4f46e5;
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .file-input-label {
-            display: inline-block;
-            padding: 12px 24px;
-            background: #8b5cf6;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: background-color 0.15s ease-in-out;
+            padding: 20px;
+            border-radius: 10px;
         }
 
-        .file-input-label:hover {
-            background: #7c3aed;
-        }
-
-        .install-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #8b5cf6;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 12px 24px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-
-        .install-button:hover {
-            background: #7c3aed;
-            transform: translateY(-2px);
-        }
-
-        .install-button.hidden {
-            display: none;
-        }
-
-        .offline-indicator {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #ef4444;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            z-index: 1000;
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: all 0.3s ease;
-        }
-
-        .offline-indicator.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .offline-indicator.online {
-            background: #10b981;
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
         }
 
         @media (max-width: 768px) {
-            .grid-5 {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .input-row {
+            .tabs {
                 flex-direction: column;
-            }
-            
-            .progress-stats {
-                flex-direction: column;
-                gap: 8px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="offline-indicator" id="offline-indicator">
-        📶 Back online!
-    </div>
-    
-    <button class="install-button hidden" id="install-button">
-        📱 Install App
-    </button>
-
     <div class="container">
         <div class="header">
-            <h1>📝 Writing Progress Tracker</h1>
-            <p>Track your daily writing goals and visualize your progress</p>
+            <h1>🧬 GeneticFit</h1>
+            <p>Personalisierte Fitness & Ernährung basierend auf Ihrer Genetik</p>
         </div>
 
-        <div class="grid grid-2">
-            <div class="card">
-                <h2>🎯 Goals</h2>
-                <div class="input-group">
-                    <label for="daily-goal">Daily Word Count Goal</label>
-                    <input type="number" id="daily-goal" value="1000" placeholder="Enter daily goal">
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('training')">💪 Training</button>
+            <button class="tab" onclick="showTab('nutrition')">🍎 Ernährung</button>
+            <button class="tab" onclick="showTab('supplements')">💊 Supplemente</button>
+            <button class="tab" onclick="showTab('progress')">📈 Fortschritt</button>
+        </div>
+
+        <!-- Training -->
+        <div id="training" class="content active">
+            <h2>📅 Wöchentlicher Trainingsplan</h2>
+            <div class="grid grid-3">
+                <div class="card workout-card strength" onclick="showWorkout('monday')">
+                    <strong>Montag</strong>
+                    <p>Ganzkörper Kraft</p>
+                    <small>60-75 Min</small>
                 </div>
-                <div class="input-group">
-                    <label for="overall-goal">Overall Novel Goal</label>
-                    <input type="number" id="overall-goal" value="75000" placeholder="Enter overall goal">
+                <div class="card workout-card cardio" onclick="showWorkout('tuesday')">
+                    <strong>Dienstag</strong>
+                    <p>Ausdauer Zone 2</p>
+                    <small>45-75 Min</small>
+                </div>
+                <div class="card workout-card strength" onclick="showWorkout('wednesday')">
+                    <strong>Mittwoch</strong>
+                    <p>Oberkörper</p>
+                    <small>60-75 Min</small>
+                </div>
+                <div class="card workout-card cardio" onclick="showWorkout('thursday')">
+                    <strong>Donnerstag</strong>
+                    <p>Intervall</p>
+                    <small>30-45 Min</small>
+                </div>
+                <div class="card workout-card strength" onclick="showWorkout('friday')">
+                    <strong>Freitag</strong>
+                    <p>Unterkörper</p>
+                    <small>60-75 Min</small>
+                </div>
+                <div class="card workout-card cardio" onclick="showWorkout('saturday')">
+                    <strong>Samstag</strong>
+                    <p>Lange Ausdauer</p>
+                    <small>60-90 Min</small>
+                </div>
+                <div class="card workout-card rest" onclick="showWorkout('sunday')">
+                    <strong>Sonntag</strong>
+                    <p>Aktive Erholung</p>
+                    <small>20-30 Min</small>
+                </div>
+            </div>
+
+            <div id="workout-details" style="display: none;" class="card">
+                <h3 id="workout-title">Trainingsdetails</h3>
+                <div id="workout-content"></div>
+                <div style="margin-top: 15px;">
+                    <button onclick="completeWorkout()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer;">✅ Training abgeschlossen</button>
+                    <button onclick="hideWorkout()" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; margin-left: 10px;">❌ Schließen</button>
                 </div>
             </div>
 
             <div class="card">
-                <h2>➕ Add Today's Progress</h2>
-                <div class="input-group">
-                    <label for="entry-date">Date</label>
-                    <input type="date" id="entry-date">
+                <h3>⚠️ Genetische Anpassungen</h3>
+                <p><strong>ADRB2-Herausforderung:</strong> Längere, moderate Einheiten bevorzugen</p>
+                <p><strong>FTO-Kompensation:</strong> Krafttraining priorisieren für höheren Grundumsatz</p>
+            </div>
+        </div>
+
+        <!-- Ernährung -->
+        <div id="nutrition" class="content">
+            <h2>🍎 Täglicher Ernährungsplan</h2>
+            
+            <div class="meal">
+                <h4>🌅 Frühstück (450 kcal)</h4>
+                <p>80g Haferflocken + 300ml Milch + 1 Banane + 1 EL Walnüsse</p>
+                <small>✅ Laktase-Persistenz optimal genutzt</small>
+            </div>
+
+            <div class="meal">
+                <h4>🍽️ Mittagessen (580 kcal)</h4>
+                <p>150g Lachs + 200g Süßkartoffel + großer Salat</p>
+                <small>✅ Direkte EPA/DHA für FADS1-Kompensation</small>
+            </div>
+
+            <div class="meal">
+                <h4>🍌 Pre-Workout (120 kcal)</h4>
+                <p>1 Banane + Kaffee (100-200mg Koffein)</p>
+                <small>✅ CYP1A2-angepasste Koffein-Dosis</small>
+            </div>
+
+            <div class="meal">
+                <h4>🍖 Abendessen (560 kcal)</h4>
+                <p>150g mageres Fleisch + 100g Quinoa + Gemüse</p>
+                <small>✅ Hoher Protein-Anteil für FTO-Kompensation</small>
+            </div>
+
+            <div class="card">
+                <h3>📊 Makros (2200 kcal)</h3>
+                <p>Protein: 32% (144g) | Kohlenhydrate: 43% (236g) | Fette: 25% (61g)</p>
+            </div>
+        </div>
+
+        <!-- Supplemente -->
+        <div id="supplements" class="content">
+            <h2>💊 Tägliche Supplemente</h2>
+            
+            <div class="supplement" id="omega3">
+                <div>
+                    <strong>Omega-3 EPA/DHA - 2500mg</strong><br>
+                    <small>⚠️ FADS1-kritisch - Mit Hauptmahlzeit</small>
                 </div>
-                <div class="input-group">
-                    <label for="words-written">Words Written</label>
-                    <div class="input-row">
-                        <input type="number" id="words-written" placeholder="Words written today">
-                        <button class="btn" onclick="addEntry()">Add</button>
+                <input type="checkbox" class="checkbox" onclick="toggleSupplement('omega3')">
+            </div>
+
+            <div class="supplement" id="vitd">
+                <div>
+                    <strong>Vitamin D3 + K2 - 3500 IE</strong><br>
+                    <small>⚠️ GC-Gen Kompensation - Morgens</small>
+                </div>
+                <input type="checkbox" class="checkbox" onclick="toggleSupplement('vitd')">
+            </div>
+
+            <div class="supplement" id="magnesium">
+                <div>
+                    <strong>Magnesium - 500mg</strong><br>
+                    <small>✅ Vitamin D-Aktivierung - Abends</small>
+                </div>
+                <input type="checkbox" class="checkbox" onclick="toggleSupplement('magnesium')">
+            </div>
+
+            <div class="supplement" id="creatine">
+                <div>
+                    <strong>Kreatin - 5g</strong><br>
+                    <small>✅ ADRB2-Kompensation - Jederzeit</small>
+                </div>
+                <input type="checkbox" class="checkbox" onclick="toggleSupplement('creatine')">
+            </div>
+
+            <div class="supplement" id="betaalanine">
+                <div>
+                    <strong>Beta-Alanin - 4g</strong><br>
+                    <small>✅ Muskuläre Ausdauer - Aufgeteilt</small>
+                </div>
+                <input type="checkbox" class="checkbox" onclick="toggleSupplement('betaalanine')">
+            </div>
+
+            <div class="card">
+                <h3>⏰ Timing</h3>
+                <p><strong>Morgens:</strong> Vitamin D3, B-Komplex</p>
+                <p><strong>Mittags:</strong> Omega-3, Beta-Alanin</p>
+                <p><strong>Abends:</strong> Magnesium, Zink, Kreatin</p>
+            </div>
+        </div>
+
+        <!-- Fortschritt -->
+        <div id="progress" class="content">
+            <h2>📈 Fortschritt</h2>
+            
+            <div class="grid grid-2">
+                <div class="stat">
+                    <div class="stat-number" id="weeks-count">0</div>
+                    <p>Wochen im Programm</p>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="compliance-rate">0%</div>
+                    <p>Trainings-Compliance</p>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="weight-change">0kg</div>
+                    <p>Gewichtsveränderung</p>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="strength-gain">0%</div>
+                    <p>Kraftsteigerung</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📊 Daten eingeben</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div>
+                        <label>Aktuelles Gewicht (kg):</label>
+                        <input type="number" id="current-weight" placeholder="80" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                    </div>
+                    <div>
+                        <label>Startgewicht (kg):</label>
+                        <input type="number" id="start-weight" placeholder="85" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                    </div>
+                    <div>
+                        <label>Kniebeuge aktuell (kg):</label>
+                        <input type="number" id="squat-current" placeholder="95" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                    </div>
+                    <div>
+                        <label>Bankdrücken aktuell (kg):</label>
+                        <input type="number" id="bench-current" placeholder="77" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
                     </div>
                 </div>
+                <button onclick="updateProgress()" style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; margin-top: 15px;">💾 Fortschritt speichern</button>
             </div>
-        </div>
 
-        <div class="progress-section">
-            <h2>📚 Novel Progress</h2>
-            <div class="progress-info">
-                <span id="current-words">0 words</span>
-                <span id="goal-words">75,000 words</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
-            </div>
-            <div class="progress-stats">
-                <span class="progress-left" id="progress-percent">0% Complete</span>
-                <span id="remaining-words">75,000 words remaining</span>
-            </div>
-            <div class="completion-estimate hidden" id="completion-estimate">
-                At your current pace, you'll finish in approximately <span class="highlight" id="days-to-complete">0 days</span>
-            </div>
-        </div>
-
-        <div class="grid grid-5">
-            <div class="stat-card">
-                <div class="icon icon-blue">📖</div>
-                <div class="value" id="total-words">0</div>
-                <div class="label">Total Words</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon icon-indigo">🎯</div>
-                <div class="value" id="words-left">75,000</div>
-                <div class="label">Words Left</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon icon-green">📈</div>
-                <div class="value" id="daily-average">0</div>
-                <div class="label">Daily Average</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon icon-purple">📅</div>
-                <div class="value" id="days-tracked">0</div>
-                <div class="label">Days Tracked</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon icon-orange">🎯</div>
-                <div class="value" id="daily-goal-rate">0%</div>
-                <div class="label">Daily Goal Rate</div>
-            </div>
-        </div>
-
-        <div class="grid grid-2">
             <div class="card">
-                <h3>📈 Cumulative Progress</h3>
-                <div class="chart-container">
-                    <canvas id="cumulative-chart"></canvas>
+                <h3>💪 Kraftentwicklung</h3>
+                <div id="strength-display">
+                    <p>Kniebeuge: <span id="squat-progress">Noch keine Daten</span></p>
+                    <p>Bankdrücken: <span id="bench-progress">Noch keine Daten</span></p>
+                    <p>Kreuzheben: <span id="deadlift-progress">Noch keine Daten</span></p>
                 </div>
             </div>
+
             <div class="card">
-                <h3>📊 Daily Word Count</h3>
-                <div class="chart-container">
-                    <canvas id="daily-chart"></canvas>
+                <h3>📅 Trainingslog</h3>
+                <div id="workout-log">
+                    <p>Noch keine Trainings abgeschlossen</p>
                 </div>
             </div>
-        </div>
-
-        <div class="card" id="recent-entries" style="display: none;">
-            <h3>📋 Recent Entries</h3>
-            <table class="entries-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Words Written</th>
-                        <th>Goal Progress</th>
-                    </tr>
-                </thead>
-                <tbody id="entries-tbody">
-                </tbody>
-            </table>
-        </div>
-
-        <div class="export-section">
-            <h3>💾 Save & Load Your Progress</h3>
-            <p style="margin-bottom: 16px; color: #6b7280;">Export your data to save it, or import previously saved data</p>
-            <button class="btn btn-secondary" onclick="exportData()">Export Data</button>
-            <label for="import-file" class="file-input-label">Import Data</label>
-            <input type="file" id="import-file" class="file-input" accept=".json" onchange="importData(this)">
         </div>
     </div>
 
     <script>
-        // PWA Variables
-        let deferredPrompt;
-        let isOnline = navigator.onLine;
+        // Workout data
+        const workouts = {
+            monday: {
+                title: "Montag - Ganzkörper Krafttraining",
+                exercises: [
+                    "Kniebeuge: 4 Sätze x 6-10 Wdh",
+                    "Kreuzheben: 4 Sätze x 6-8 Wdh", 
+                    "Bankdrücken: 3 Sätze x 8-12 Wdh",
+                    "Klimmzüge: 3 Sätze x 8-12 Wdh",
+                    "Schulterdrücken: 3 Sätze x 10-12 Wdh",
+                    "Plank: 3 Sätze x 30-60 Sek"
+                ]
+            },
+            tuesday: {
+                title: "Dienstag - Ausdauer Zone 2",
+                exercises: [
+                    "45-75 Min bei 60-70% HFmax",
+                    "Joggen, Radfahren oder Ellipsentrainer",
+                    "Konstante, moderate Intensität",
+                    "Optimal für ADRB2-Genetik"
+                ]
+            },
+            wednesday: {
+                title: "Mittwoch - Oberkörper",
+                exercises: [
+                    "Bankdrücken: 4 Sätze x 8-10 Wdh",
+                    "Rudern: 4 Sätze x 8-10 Wdh",
+                    "Dips: 3 Sätze x 10-15 Wdh",
+                    "Latzug: 3 Sätze x 8-12 Wdh",
+                    "Seitenheben: 3 Sätze x 12-15 Wdh",
+                    "Bizeps-Curls: 3 Sätze x 12-15 Wdh"
+                ]
+            },
+            thursday: {
+                title: "Donnerstag - Intervalltraining",
+                exercises: [
+                    "10 Min Aufwärmen Zone 1",
+                    "6 x (3 Min Zone 3 + 2 Min Zone 1)",
+                    "10 Min Cool-down",
+                    "Angepasst an ADRB2-Herausforderung"
+                ]
+            },
+            friday: {
+                title: "Freitag - Unterkörper",
+                exercises: [
+                    "Kniebeugen: 4 Sätze x 6-10 Wdh",
+                    "Rumänisches Kreuzheben: 4 Sätze x 8-10 Wdh",
+                    "Ausfallschritte: 3 Sätze x 12 pro Bein",
+                    "Beinpresse: 3 Sätze x 15-20 Wdh",
+                    "Wadenheben: 4 Sätze x 15-20 Wdh",
+                    "Glute Bridges: 3 Sätze x 15-20 Wdh"
+                ]
+            },
+            saturday: {
+                title: "Samstag - Lange Ausdauer",
+                exercises: [
+                    "60-90 Min Zone 1-2",
+                    "Wandern, Radtour oder Schwimmen",
+                    "Sehr komfortable Intensität",
+                    "Optimiert Fettverbrennung bei Ihrer Genetik"
+                ]
+            },
+            sunday: {
+                title: "Sonntag - Aktive Erholung",
+                exercises: [
+                    "20-30 Min Spaziergang",
+                    "Yoga oder Stretching",
+                    "Leichte Mobilisation",
+                    "Regeneration priorisieren"
+                ]
+            }
+        };
 
-        // Data storage
-        let dailyEntries = [];
-        let dailyGoal = 1000;
-        let overallGoal = 75000;
-        let cumulativeChart = null;
-        let dailyChart = null;
+        // Show workout details
+        function showWorkout(day) {
+            const workout = workouts[day];
+            document.getElementById('workout-title').textContent = workout.title;
+            
+            let content = '<ul style="margin: 15px 0;">';
+            workout.exercises.forEach(exercise => {
+                content += `<li style="margin: 8px 0; padding: 8px; background: #f8f9fa; border-radius: 5px;">${exercise}</li>`;
+            });
+            content += '</ul>';
+            
+            document.getElementById('workout-content').innerHTML = content;
+            document.getElementById('workout-details').style.display = 'block';
+        }
 
-        // Initialize PWA
-        document.addEventListener('DOMContentLoaded', function() {
-            initializePWA();
-            loadDataFromStorage();
-            document.getElementById('entry-date').value = new Date().toISOString().split('T')[0];
+        // Hide workout details
+        function hideWorkout() {
+            document.getElementById('workout-details').style.display = 'none';
+        }
+
+        // Complete workout
+        function completeWorkout() {
+            const date = new Date().toLocaleDateString('de-DE');
+            const title = document.getElementById('workout-title').textContent;
+            
+            // Save to workout log
+            let workoutLog = JSON.parse(localStorage.getItem('workoutLog') || '[]');
+            workoutLog.unshift({date, title}); // Add to beginning
+            if (workoutLog.length > 10) workoutLog = workoutLog.slice(0, 10); // Keep only last 10
+            localStorage.setItem('workoutLog', JSON.stringify(workoutLog));
+            
+            // Update display
+            updateWorkoutLog();
             updateStats();
-            updateCharts();
-        });
-
-        function initializePWA() {
-            // Create manifest
-            const manifest = {
-                name: "Writing Progress Tracker",
-                short_name: "WritingTracker",
-                description: "Track your daily writing goals and visualize your progress",
-                start_url: "/",
-                display: "standalone",
-                background_color: "#f5f3ff",
-                theme_color: "#8b5cf6",
-                orientation: "portrait-primary",
-                icons: [
-                    {
-                        src: generateIcon(192),
-                        sizes: "192x192",
-                        type: "image/png",
-                        purpose: "any maskable"
-                    },
-                    {
-                        src: generateIcon(512),
-                        sizes: "512x512",
-                        type: "image/png",
-                        purpose: "any maskable"
-                    }
-                ],
-                categories: ["productivity", "writing", "education"]
-            };
-
-            const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-            const manifestURL = URL.createObjectURL(manifestBlob);
-            document.getElementById('manifest-placeholder').href = manifestURL;
-
-            // Set app icons
-            const icon = generateIcon(180);
-            document.getElementById('apple-touch-icon').href = icon;
-
-            // Register service worker
-            if ('serviceWorker' in navigator) {
-                registerServiceWorker();
-            }
-
-            // Handle install prompt
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                document.getElementById('install-button').classList.remove('hidden');
-            });
-
-            // Handle install button click
-            document.getElementById('install-button').addEventListener('click', () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    deferredPrompt.userChoice.then((choiceResult) => {
-                        if (choiceResult.outcome === 'accepted') {
-                            console.log('User accepted the install prompt');
-                            document.getElementById('install-button').classList.add('hidden');
-                        }
-                        deferredPrompt = null;
-                    });
-                }
-            });
-
-            // Handle online/offline status
-            window.addEventListener('online', () => {
-                isOnline = true;
-                showOfflineIndicator('📶 Back online!', 'online');
-            });
-
-            window.addEventListener('offline', () => {
-                isOnline = false;
-                showOfflineIndicator('📡 You\'re offline', 'offline');
-            });
-        }
-
-        function generateIcon(size) {
-            const canvas = document.createElement('canvas');
-            canvas.width = size;
-            canvas.height = size;
-            const ctx = canvas.getContext('2d');
-
-            // Background
-            ctx.fillStyle = '#8b5cf6';
-            ctx.fillRect(0, 0, size, size);
-
-            // Icon text
-            ctx.fillStyle = 'white';
-            ctx.font = `bold ${size * 0.4}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('📝', size / 2, size / 2);
-
-            return canvas.toDataURL();
-        }
-
-        function registerServiceWorker() {
-            // Service worker as a data URL
-            const swCode = `
-                const CACHE_NAME = 'writing-tracker-v1';
-                const urlsToCache = [
-                    '/',
-                    'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js'
-                ];
-
-                self.addEventListener('install', (event) => {
-                    event.waitUntil(
-                        caches.open(CACHE_NAME)
-                            .then((cache) => cache.addAll(urlsToCache))
-                    );
-                });
-
-                self.addEventListener('fetch', (event) => {
-                    event.respondWith(
-                        caches.match(event.request)
-                            .then((response) => {
-                                return response || fetch(event.request);
-                            })
-                    );
-                });
-
-                self.addEventListener('activate', (event) => {
-                    event.waitUntil(
-                        caches.keys().then((cacheNames) => {
-                            return Promise.all(
-                                cacheNames.map((cacheName) => {
-                                    if (cacheName !== CACHE_NAME) {
-                                        return caches.delete(cacheName);
-                                    }
-                                })
-                            );
-                        })
-                    );
-                });
-            `;
-
-            const blob = new Blob([swCode], { type: 'application/javascript' });
-            const swURL = URL.createObjectURL(blob);
-
-            navigator.serviceWorker.register(swURL)
-                .then((registration) => {
-                    console.log('SW registered: ', registration);
-                })
-                .catch((registrationError) => {
-                    console.log('SW registration failed: ', registrationError);
-                });
-        }
-
-        function showOfflineIndicator(message, type) {
-            const indicator = document.getElementById('offline-indicator');
-            indicator.textContent = message;
-            indicator.className = `offline-indicator show ${type}`;
             
-            setTimeout(() => {
-                indicator.classList.remove('show');
-            }, 3000);
+            alert('✅ Training erfolgreich abgeschlossen!');
+            hideWorkout();
         }
 
-        function loadDataFromStorage() {
-            try {
-                const saved = JSON.parse(localStorage.getItem('writingTrackerData') || '{}');
-                if (saved.dailyEntries) {
-                    dailyEntries = saved.dailyEntries;
-                    dailyGoal = saved.dailyGoal || 1000;
-                    overallGoal = saved.overallGoal || 75000;
-
-                    document.getElementById('daily-goal').value = dailyGoal;
-                    document.getElementById('overall-goal').value = overallGoal;
-                }
-            } catch (e) {
-                console.log('No saved data found');
-            }
-        }
-
-        function saveDataToStorage() {
-            try {
-                const data = {
-                    dailyEntries,
-                    dailyGoal,
-                    overallGoal,
-                    lastSaved: new Date().toISOString()
-                };
-                localStorage.setItem('writingTrackerData', JSON.stringify(data));
-            } catch (e) {
-                console.log('Failed to save data');
-            }
-        }
-
-        function addEntry() {
-            const date = document.getElementById('entry-date').value;
-            const words = parseInt(document.getElementById('words-written').value) || 0;
+        // Update workout log display
+        function updateWorkoutLog() {
+            const workoutLog = JSON.parse(localStorage.getItem('workoutLog') || '[]');
+            const logElement = document.getElementById('workout-log');
             
-            if (!date || words < 0) {
-                alert('Please enter a valid date and word count');
+            if (workoutLog.length === 0) {
+                logElement.innerHTML = '<p>Noch keine Trainings abgeschlossen</p>';
                 return;
             }
-
-            // Update goals
-            dailyGoal = parseInt(document.getElementById('daily-goal').value) || 1000;
-            overallGoal = parseInt(document.getElementById('overall-goal').value) || 75000;
-
-            // Check if entry exists for this date
-            const existingIndex = dailyEntries.findIndex(entry => entry.date === date);
             
-            if (existingIndex >= 0) {
-                dailyEntries[existingIndex].words = words;
-            } else {
-                dailyEntries.push({ date, words });
-            }
-
-            // Sort entries by date
-            dailyEntries.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-            // Clear input
-            document.getElementById('words-written').value = '';
-
-            // Save to storage
-            saveDataToStorage();
-
-            // Update UI
-            updateStats();
-            updateCharts();
-            updateRecentEntries();
+            let html = '';
+            workoutLog.forEach(workout => {
+                html += `<div style="padding: 10px; background: #f8f9fa; border-radius: 5px; margin: 5px 0;">
+                    <strong>${workout.date}</strong> - ${workout.title}
+                </div>`;
+            });
+            logElement.innerHTML = html;
         }
 
+        // Update progress stats
+        function updateProgress() {
+            const currentWeight = parseFloat(document.getElementById('current-weight').value) || 0;
+            const startWeight = parseFloat(document.getElementById('start-weight').value) || 0;
+            const squatCurrent = parseFloat(document.getElementById('squat-current').value) || 0;
+            const benchCurrent = parseFloat(document.getElementById('bench-current').value) || 0;
+            
+            // Save data
+            const progressData = {
+                currentWeight,
+                startWeight,
+                squatCurrent,
+                benchCurrent,
+                squatStart: parseFloat(localStorage.getItem('squatStart')) || squatCurrent,
+                benchStart: parseFloat(localStorage.getItem('benchStart')) || benchCurrent,
+                startDate: localStorage.getItem('startDate') || new Date().toISOString()
+            };
+            
+            // Save start values if not exist
+            if (!localStorage.getItem('squatStart')) {
+                localStorage.setItem('squatStart', squatCurrent.toString());
+            }
+            if (!localStorage.getItem('benchStart')) {
+                localStorage.setItem('benchStart', benchCurrent.toString());
+            }
+            if (!localStorage.getItem('startDate')) {
+                localStorage.setItem('startDate', new Date().toISOString());
+            }
+            
+            Object.keys(progressData).forEach(key => {
+                localStorage.setItem(key, progressData[key].toString());
+            });
+            
+            updateStats();
+            updateStrengthDisplay();
+            
+            alert('💾 Fortschritt gespeichert!');
+        }
+
+        // Update stats display
         function updateStats() {
-            const totalWords = dailyEntries.reduce((sum, entry) => sum + entry.words, 0);
-            const averageWords = dailyEntries.length > 0 ? Math.round(totalWords / dailyEntries.length) : 0;
-            const remainingWords = Math.max(0, overallGoal - totalWords);
-            const overallProgress = (totalWords / overallGoal) * 100;
-            const daysToComplete = averageWords > 0 ? Math.ceil(remainingWords / averageWords) : 0;
-
-            // Update progress bar
-            document.getElementById('progress-fill').style.width = Math.min(100, overallProgress) + '%';
-            document.getElementById('current-words').textContent = totalWords.toLocaleString() + ' words';
-            document.getElementById('goal-words').textContent = overallGoal.toLocaleString() + ' words';
-            document.getElementById('progress-percent').textContent = overallProgress.toFixed(1) + '% Complete';
-            document.getElementById('remaining-words').textContent = remainingWords.toLocaleString() + ' words remaining';
-
-            // Update completion estimate
-            const estimateEl = document.getElementById('completion-estimate');
-            if (daysToComplete > 0 && remainingWords > 0) {
-                document.getElementById('days-to-complete').textContent = daysToComplete + ' days';
-                estimateEl.classList.remove('hidden');
-            } else {
-                estimateEl.classList.add('hidden');
-            }
-
-            // Update stat cards
-            document.getElementById('total-words').textContent = totalWords.toLocaleString();
-            document.getElementById('words-left').textContent = remainingWords.toLocaleString();
-            document.getElementById('daily-average').textContent = averageWords.toLocaleString();
-            document.getElementById('days-tracked').textContent = dailyEntries.length.toString();
-            document.getElementById('daily-goal-rate').textContent = Math.round((averageWords / dailyGoal) * 100) + '%';
-        }
-
-        function updateCharts() {
-            const ctx1 = document.getElementById('cumulative-chart').getContext('2d');
-            const ctx2 = document.getElementById('daily-chart').getContext('2d');
-
-            // Prepare data
-            const labels = dailyEntries.map(entry => new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-            const cumulativeData = [];
-            const goalLineData = [];
-            let cumulative = 0;
-
-            dailyEntries.forEach((entry, index) => {
-                cumulative += entry.words;
-                cumulativeData.push(cumulative);
-                goalLineData.push(dailyGoal * (index + 1));
-            });
-
-            // Destroy existing charts
-            if (cumulativeChart) cumulativeChart.destroy();
-            if (dailyChart) dailyChart.destroy();
-
-            // Cumulative chart
-            cumulativeChart = new Chart(ctx1, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Total Words',
-                        data: cumulativeData,
-                        borderColor: '#8b5cf6',
-                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                        borderWidth: 3,
-                        fill: false
-                    }, {
-                        label: 'Goal Trajectory',
-                        data: goalLineData,
-                        borderColor: '#ef4444',
-                        backgroundColor: 'transparent',
-                        borderWidth: 2,
-                        borderDash: [5, 5],
-                        fill: false
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            // Daily chart
-            dailyChart = new Chart(ctx2, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Words Written',
-                        data: dailyEntries.map(entry => entry.words),
-                        backgroundColor: '#10b981',
-                        borderColor: '#059669',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-
-        function updateRecentEntries() {
-            const tbody = document.getElementById('entries-tbody');
-            const recentEntries = dailyEntries.slice(-7).reverse();
+            const startDate = new Date(localStorage.getItem('startDate') || new Date());
+            const weeks = Math.floor((new Date() - startDate) / (7 * 24 * 60 * 60 * 1000));
             
-            if (recentEntries.length === 0) {
-                document.getElementById('recent-entries').style.display = 'none';
-                return;
+            const workoutLog = JSON.parse(localStorage.getItem('workoutLog') || '[]');
+            const totalWorkouts = workoutLog.length;
+            const expectedWorkouts = weeks * 6; // 6 workouts per week
+            const compliance = expectedWorkouts > 0 ? Math.round((totalWorkouts / expectedWorkouts) * 100) : 0;
+            
+            const currentWeight = parseFloat(localStorage.getItem('currentWeight')) || 0;
+            const startWeight = parseFloat(localStorage.getItem('startWeight')) || 0;
+            const weightChange = currentWeight - startWeight;
+            
+            const squatCurrent = parseFloat(localStorage.getItem('squatCurrent')) || 0;
+            const squatStart = parseFloat(localStorage.getItem('squatStart')) || 0;
+            const strengthGain = squatStart > 0 ? Math.round(((squatCurrent - squatStart) / squatStart) * 100) : 0;
+            
+            document.getElementById('weeks-count').textContent = weeks;
+            document.getElementById('compliance-rate').textContent = `${Math.min(compliance, 100)}%`;
+            document.getElementById('weight-change').textContent = `${weightChange >= 0 ? '+' : ''}${weightChange.toFixed(1)}kg`;
+            document.getElementById('strength-gain').textContent = `${strengthGain >= 0 ? '+' : ''}${strengthGain}%`;
+        }
+
+        // Update strength display
+        function updateStrengthDisplay() {
+            const squatCurrent = parseFloat(localStorage.getItem('squatCurrent')) || 0;
+            const squatStart = parseFloat(localStorage.getItem('squatStart')) || 0;
+            const benchCurrent = parseFloat(localStorage.getItem('benchCurrent')) || 0;
+            const benchStart = parseFloat(localStorage.getItem('benchStart')) || 0;
+            
+            const squatGain = squatStart > 0 ? ((squatCurrent - squatStart) / squatStart * 100).toFixed(1) : 0;
+            const benchGain = benchStart > 0 ? ((benchCurrent - benchStart) / benchStart * 100).toFixed(1) : 0;
+            
+            let html = '';
+            if (squatCurrent > 0) {
+                html += `<p>Kniebeuge: ${squatStart}kg → ${squatCurrent}kg (${squatGain >= 0 ? '+' : ''}${squatGain}%)</p>`;
             }
-
-            document.getElementById('recent-entries').style.display = 'block';
-            tbody.innerHTML = '';
-
-            recentEntries.forEach(entry => {
-                const row = tbody.insertRow();
-                const dateCell = row.insertCell(0);
-                const wordsCell = row.insertCell(1);
-                const progressCell = row.insertCell(2);
-
-                dateCell.textContent = new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                wordsCell.textContent = entry.words.toLocaleString();
-                
-                const progressPercent = Math.round((entry.words / dailyGoal) * 100);
-                progressCell.innerHTML = `
-                    <div class="progress-cell">
-                        <div class="mini-progress-bar">
-                            <div class="mini-progress-fill" style="width: ${Math.min(100, progressPercent)}%"></div>
-                        </div>
-                        <span>${progressPercent}%</span>
-                    </div>
-                `;
-            });
+            if (benchCurrent > 0) {
+                html += `<p>Bankdrücken: ${benchStart}kg → ${benchCurrent}kg (${benchGain >= 0 ? '+' : ''}${benchGain}%)</p>`;
+            }
+            if (html === '') {
+                html = '<p>Noch keine Kraftdaten eingegeben</p>';
+            }
+            
+            document.getElementById('strength-display').innerHTML = html;
         }
 
-        function exportData() {
-            const data = {
-                dailyEntries,
-                dailyGoal,
-                overallGoal,
-                exportDate: new Date().toISOString()
-            };
-
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'writing-progress-data.json';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+        // Tab-Switching
+        function showTab(tabName) {
+            const contents = document.querySelectorAll('.content');
+            contents.forEach(content => content.classList.remove('active'));
+            
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
         }
 
-        function importData(input) {
-            const file = input.files[0];
-            if (!file) return;
+        // Supplement tracking
+        function toggleSupplement(id) {
+            const supplement = document.getElementById(id);
+            const checkbox = supplement.querySelector('.checkbox');
+            
+            if (checkbox.checked) {
+                supplement.classList.add('taken');
+                localStorage.setItem(`supplement_${id}`, 'true');
+            } else {
+                supplement.classList.remove('taken');
+                localStorage.setItem(`supplement_${id}`, 'false');
+            }
+        }
 
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    if (Array.isArray(imported.dailyEntries)) {
-                        dailyEntries = imported.dailyEntries;
-                        dailyGoal = imported.dailyGoal || 1000;
-                        overallGoal = imported.overallGoal || 75000;
-
-                        document.getElementById('daily-goal').value = dailyGoal;
-                        document.getElementById('overall-goal').value = overallGoal;
-
-                        saveDataToStorage();
-                        updateStats();
-                        updateCharts();
-                        updateRecentEntries();
-
-                        alert('Data imported successfully!');
-                    } else {
-                        alert('Invalid data format.');
-                    }
-                } catch (err) {
-                    alert('Failed to import data: ' + err.message);
+        // Load saved states
+        function loadData() {
+            // Load supplement states
+            const supplements = ['omega3', 'vitd', 'magnesium', 'creatine', 'betaalanine'];
+            supplements.forEach(id => {
+                const saved = localStorage.getItem(`supplement_${id}`);
+                if (saved === 'true') {
+                    const checkbox = document.getElementById(id).querySelector('.checkbox');
+                    checkbox.checked = true;
+                    document.getElementById(id).classList.add('taken');
                 }
-            };
-            reader.readAsText(file);
+            });
+            
+            // Load progress data
+            document.getElementById('current-weight').value = localStorage.getItem('currentWeight') || '';
+            document.getElementById('start-weight').value = localStorage.getItem('startWeight') || '';
+            document.getElementById('squat-current').value = localStorage.getItem('squatCurrent') || '';
+            document.getElementById('bench-current').value = localStorage.getItem('benchCurrent') || '';
+            
+            updateStats();
+            updateStrengthDisplay();
+            updateWorkoutLog();
         }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', loadData);
     </script>
 </body>
 </html>
